@@ -7,9 +7,9 @@
 [點我前往](https://billyr65.github.io)
 
 ## 📂頁面介紹
-- 'index.html':首頁/個人簡介
-- 'generic.html':興趣
-- 'elements.html':爬蟲展示
+- ˋindex.htmlˋ:首頁/個人簡介
+- ˋgeneric.htmlˋ:興趣
+- ˋelements.htmlˋ:爬蟲展示
 
 ## 🛠️使用工具
 HTML/CSS/Github Pages
