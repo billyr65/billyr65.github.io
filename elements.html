@@ -61,15 +61,72 @@
 										<h4>Blockquote</h4>
 										<blockquote>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan faucibus. Vestibulum ante ipsum primis in faucibus lorem ipsum dolor sit amet nullam adipiscing eu felis.</blockquote>
 										<h4>Preformatted</h4>
-										<pre><code>i = 0;
+										<pre><code>from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import time
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
+# 定義抓取一頁資料的函數
+def extract_page_data():
+    time.sleep(1)
+    items = driver.find_elements(By.CSS_SELECTOR, ".gsc-webResult.gsc-result") 
+    for item in items:
+        title_element = item.find_element(By.TAG_NAME, "a")
+        title = title_element.text
+        link = title_element.get_attribute("href")
+        data_list.append({"標題": title, "連結": link})
+        print(title, link)
+#%%
+options = webdriver.ChromeOptions()
+options.add_argument("--disable-blink-features=AutomationControlled")
 
-while (!deck.isInOrder()) {
-  print 'Iteration ' + i;
-  deck.shuffle();
-  i++;
-}
+driver = webdriver.Chrome(
+    service=webdriver.chrome.service.Service(ChromeDriverManager().install()),
+    options=options
+)
+# 啟動瀏覽器
+driver.get("https://www.taichung.gov.tw/")
+driver.maximize_window()
 
-print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
+# 搜尋關鍵字
+search_box = driver.find_element(By.CLASS_NAME, "searchCtrl")
+search_box = driver.find_element(By.ID, "q")
+search_box.send_keys("觀光景點")
+search_box.send_keys(Keys.ENTER)
+
+#time.sleep(2)
+
+# 存放所有資料的列表
+data_list = []
+
+# 迴圈抓多頁
+for i in range(1, 4):
+    count=0
+
+    while count<3:
+        time.sleep(2)
+        extract_page_data()
+
+        try:
+            label = f"第 {i+1} 頁"
+            next_button = driver.find_element(By.CSS_SELECTOR,f'.gsc-cursor-page[aria-label="{label}')
+            if next_button.is_enabled():
+                next_button.click()
+            else:
+                break  # 已經是最後一頁
+        except (NoSuchElementException, ElementNotInteractableException):
+            break
+        count +=1
+        time.sleep(2)
+
+driver.quit()
+#%%
+import pandas as pd
+# 轉為 DataFrame 並輸出成 CSV
+df = pd.DataFrame(data_list)
+df.to_csv(r"C:\Users\admin\Desktop\大二下\觀光景點data.csv", index=False, encoding="utf-8-sig")</code></pre>
 									</section>
 
 									<section>
